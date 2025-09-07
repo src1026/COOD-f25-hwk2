@@ -19,6 +19,8 @@ public class WordSearch {
 		File[] files = dir.listFiles();		// get the Files in the specified directory
 		
 		// Implement the rest of this method starting from here!
+
+		// this is for debugging, just to make sure it's reading the right files
         for (File file : files) {
             System.out.println(file.getName());
         }
