@@ -4,6 +4,22 @@ import java.io.*;
 import java.util.*;
 
 /*
+ * IMPLEMENTATION JUSTIFICATION:
+ * 
+ * Map Implementation Choice (HashMap):
+ * I chose HashMap for the main word-to-files mapping in buildMap(). 
+ * It maps each word to a set of file names that contain that word. 
+ * This allos for O(1) lookup time for word searches. 
+ * Also there's no ordering requirement - we don't need words sorted alphabetically
+
+ * 
+ * I also stored unique file names that contain each word in a hashste to avoid duplicates. 
+ * I chose HashSet for storing file names associated with each word because it alows for 
+ * O(1) add/contains operations for file names and automatically prevents duplicate file names for the same word
+
+ */
+
+/*
  * Implements a text search engine for a collection of documents in the same directory.
  */
 

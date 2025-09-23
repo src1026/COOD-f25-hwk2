@@ -1,4 +1,4 @@
-/**
+package src; /**
  * @author [YOUR NAME HERE!]
  *
  * This class contains the methods used for conducting a simple sentiment analysis.
@@ -20,7 +20,59 @@ public class Analyzer {
 		/*
 		 * Implement this method in Step 2
 		 */
-		return null;
+		
+		if (sentences == null) {
+			return null;
+		}
+		
+		if (sentences.isEmpty()) {
+			return new HashMap<>();
+		}
+		
+		Map<String, List<Integer>> wordScores = new HashMap<>();
+		
+		for (Sentence sentence : sentences) {
+			if (sentence == null || 
+				sentence.getScore() < -2 || 
+				sentence.getScore() > 2 || 
+				sentence.getText() == null || 
+				sentence.getText().isEmpty()) {
+				continue;
+			}
+			
+			String[] parts = sentence.getText().split("\\s+");
+
+			for (String part : parts) {
+				if (part.isEmpty()) {
+					continue;
+				}
+				
+				if (!Character.isLetter(part.charAt(0))) {
+					continue;
+				}
+				String word = part.toLowerCase();
+				if (!wordScores.containsKey(word)) {
+					wordScores.put(word, new ArrayList<>());
+				}
+				wordScores.get(word).add(sentence.getScore());
+			}
+		}
+		
+		Map<String, Double> result = new HashMap<>();
+		for (Map.Entry<String, List<Integer>> entry : wordScores.entrySet()) {
+			String word = entry.getKey();
+			List<Integer> scores = entry.getValue();
+			
+			double sum = 0.0;
+			for (int score : scores) {
+				sum += score;
+			}
+			double average = sum / scores.size();
+			
+			result.put(word, average);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -47,7 +99,29 @@ public class Analyzer {
      * Just use it for testing this class. It is not considered for grading.
      */
     public static void main(String[] args) {
+        System.out.println("Testing Analyzer.calculateWordScores method:");
+        
+        System.out.println("Basic functionality");
+        Set<Sentence> sentences1 = new HashSet<>();
+        sentences1.add(new Sentence(2, "I like cake and could eat cake all day ."));
+        sentences1.add(new Sentence(1, "I hope the dog does not eat my cake ."));
+        
+        Map<String, Double> scores1 = calculateWordScores(sentences1);
 
+        
+        System.out.println("Invalid sentences");
+        Set<Sentence> sentences6 = new HashSet<>();
+        sentences6.add(new Sentence(2, "Valid sentence"));
+        sentences6.add(new Sentence(5, "Invalid score"));
+        sentences6.add(new Sentence(1, ""));
+        sentences6.add(new Sentence(1, null));
+        
+        Map<String, Double> scores6 = calculateWordScores(sentences6);
+        if (scores6.size() == 2 && scores6.containsKey("valid") && scores6.containsKey("sentence")) {
+            System.out.println("Invalid sentences ignored correctly");
+        } else {
+            System.out.println("Invalid sentences not handled correctly");
+        }
     }
 
 }
