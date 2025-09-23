@@ -89,7 +89,41 @@ public class Analyzer {
 		/*
 		 * Implement this method in Step 3
 		 */
-		return 0;
+		
+		if (wordScores == null || sentence == null || sentence.isEmpty()) {
+			return 0;
+		}
+		
+		String[] words = sentence.split("\\s+");
+		
+		double totalScore = 0.0;
+		int wordCount = 0;
+		
+		for (String word : words) {
+			if (word.isEmpty()) {
+				continue;
+			}
+			
+			// Skip words that don't start with a letter
+			if (!Character.isLetter(word.charAt(0))) {
+				continue;
+			}
+			
+			// Convert to lowercase
+			String lowercaseWord = word.toLowerCase();
+			
+			// Get score from map, or 0 if word not found
+			double score = wordScores.getOrDefault(lowercaseWord, 0.0);
+			totalScore += score;
+			wordCount++;
+		}
+		
+		// Return average score, or 0 if no valid words found
+		if (wordCount == 0) {
+			return 0;
+		}
+		
+		return totalScore / wordCount;
 	}
 
     /**
@@ -99,29 +133,96 @@ public class Analyzer {
      * Just use it for testing this class. It is not considered for grading.
      */
     public static void main(String[] args) {
-        System.out.println("Testing Analyzer.calculateWordScores method:");
+        System.out.println("Testing Analyzer.calculateSentenceScore method:");
         
-        System.out.println("Basic functionality");
-        Set<Sentence> sentences1 = new HashSet<>();
-        sentences1.add(new Sentence(2, "I like cake and could eat cake all day ."));
-        sentences1.add(new Sentence(1, "I hope the dog does not eat my cake ."));
+        Map<String, Double> scores1 = new HashMap<>();
+        scores1.put("dogs", 1.5);
+        scores1.put("are", 0.0);
+        scores1.put("cute", 2.0);
         
-        Map<String, Double> scores1 = calculateWordScores(sentences1);
-
-        
-        System.out.println("Invalid sentences");
-        Set<Sentence> sentences6 = new HashSet<>();
-        sentences6.add(new Sentence(2, "Valid sentence"));
-        sentences6.add(new Sentence(5, "Invalid score"));
-        sentences6.add(new Sentence(1, ""));
-        sentences6.add(new Sentence(1, null));
-        
-        Map<String, Double> scores6 = calculateWordScores(sentences6);
-        if (scores6.size() == 2 && scores6.containsKey("valid") && scores6.containsKey("sentence")) {
-            System.out.println("Invalid sentences ignored correctly");
+        double result1 = calculateSentenceScore(scores1, "dogs are cute");
+        double expected1 = (1.5 + 0.0 + 2.0) / 3; // 3.5 / 3 = 1.1667
+        if (Math.abs(result1 - expected1) < 0.001) {
+            System.out.println("Basic functionality: " + result1 + " (expected: " + expected1 + ")");
         } else {
-            System.out.println("Invalid sentences not handled correctly");
+            System.out.println("Basic functionality failed: " + result1 + " (expected: " + expected1 + ")");
         }
+        
+        Map<String, Double> scores2 = new HashMap<>();
+        scores2.put("dogs", 1.5);
+        scores2.put("are", 0.0);
+        scores2.put("cute", 2.0);
+        
+        double result2 = calculateSentenceScore(scores2, "dogs are dogs");
+        double expected2 = (1.5 + 0.0 + 1.5) / 3; // 3.0 / 3 = 1.0
+        if (Math.abs(result2 - expected2) < 0.001) {
+            System.out.println("Weighted scoring: " + result2 + " (expected: " + expected2 + ")");
+        } else {
+            System.out.println("Weighted scoring failed: " + result2 + " (expected: " + expected2 + ")");
+        }
+        
+        Map<String, Double> scores3 = new HashMap<>();
+        scores3.put("dogs", 1.5);
+        scores3.put("are", 0.0);
+        scores3.put("smart", 2.0);
+        
+        double result3 = calculateSentenceScore(scores3, "dogs are ?smart");
+        double expected3 = (1.5 + 0.0) / 2; // 1.5 / 2 = 0.75
+        if (Math.abs(result3 - expected3) < 0.001) {
+            System.out.println("Punctuation filtering: " + result3 + " (expected: " + expected3 + ")");
+        } else {
+            System.out.println("Punctuation filtering failed: " + result3 + " (expected: " + expected3 + ")");
+        }
+        
+        Map<String, Double> scores4 = new HashMap<>();
+        scores4.put("dogs", 1.5);
+        scores4.put("are", 0.0);
+        
+        double result4 = calculateSentenceScore(scores4, "dogs are funny");
+        double expected4 = (1.5 + 0.0 + 0.0) / 3; // 1.5 / 3 = 0.5
+        if (Math.abs(result4 - expected4) < 0.001) {
+            System.out.println("Missing words: " + result4 + " (expected: " + expected4 + ")");
+        } else {
+            System.out.println("Missing words failed: " + result4 + " (expected: " + expected4 + ")");
+        }
+        
+        Map<String, Double> scores5 = new HashMap<>();
+        scores5.put("dogs", 1.5);
+        scores5.put("are", 0.0);
+        scores5.put("cute", 2.0);
+        
+        double result5 = calculateSentenceScore(scores5, "DOGS ARE CUTE");
+        double expected5 = (1.5 + 0.0 + 2.0) / 3; // 3.5 / 3 = 1.1667
+        if (Math.abs(result5 - expected5) < 0.001) {
+            System.out.println("Case insensitivity: " + result5 + " (expected: " + expected5 + ")");
+        } else {
+            System.out.println("Case insensitivity failed: " + result5 + " (expected: " + expected5 + ")");
+        }
+        
+        double result6a = calculateSentenceScore(null, "dogs are cute");
+        double result6b = calculateSentenceScore(scores1, null);
+        double result6c = calculateSentenceScore(scores1, "");
+        
+        if (result6a == 0 && result6b == 0 && result6c == 0) {
+            System.out.println("Null inputs handled correctly");
+        } else {
+            System.out.println("Null inputs not handled correctly");
+        }
+        
+        double result7 = calculateSentenceScore(scores1, "   ");
+        if (result7 == 0) {
+            System.out.println("Empty sentence handled correctly");
+        } else {
+            System.out.println("Empty sentence not handled correctly");
+        }
+        
+        double result8 = calculateSentenceScore(scores1, "! ? .");
+        if (result8 == 0) {
+            System.out.println("Only punctuation handled correctly");
+        } else {
+            System.out.println("Only punctuation not handled correctly");
+        }
+        
     }
 
 }
