@@ -81,7 +81,7 @@ public class WordSearch {
 
         // populate the file_freq_map
         for (String t : terms) {
-            Set<String> associated_files = map.get(t);
+            Set<String> associated_files = map.getOrDefault(t, new HashSet<>());
             for (String file : associated_files) {
                 if (!file_freq_map.containsKey(file)) {
                     file_freq_map.put(file, 1);
