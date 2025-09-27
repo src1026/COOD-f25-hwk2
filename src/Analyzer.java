@@ -2,11 +2,17 @@ package src; /**
  * @author [YOUR NAME HERE!]
  *
  * This class contains the methods used for conducting a simple sentiment analysis.
+ *
+ * I chose HashMap for the calculateWordScores() method, mapping each word to its weighted average sentiment score.
+ * This allows for O(1) average-case lookup time for word searches.
+ * There's also no ordering requirement, and we don't need words sorted alphabetically
+ * we need fast word lookups during sentence scoring, without requiring any specific ordering.
  */
 
 import java.util.*;
 
 public class Analyzer {
+	private static Map<String, Double> sentenceScoreCache = new HashMap<>();
 
 	/**
 	 * This method calculates the weighted average for each word in all the Sentences.
@@ -89,9 +95,12 @@ public class Analyzer {
 		/*
 		 * Implement this method in Step 3
 		 */
-		
-		if (wordScores == null || sentence == null || sentence.isEmpty()) {
-			return 0;
+        if (wordScores == null || sentence == null || sentence.isEmpty()) {
+            return 0;
+        }
+
+		if (sentenceScoreCache.containsKey(sentence)) {
+			return sentenceScoreCache.get(sentence);
 		}
 		
 		String[] words = sentence.split("\\s+");
@@ -118,12 +127,18 @@ public class Analyzer {
 			wordCount++;
 		}
 		
-		// Return average score, or 0 if no valid words found
+		// Calculate result
+		double result;
 		if (wordCount == 0) {
-			return 0;
+			result = 0;
+		} else {
+			result = totalScore / wordCount;
 		}
 		
-		return totalScore / wordCount;
+		// Cache the result for future use
+		sentenceScoreCache.put(sentence, result);
+		
+		return result;
 	}
 
     /**
@@ -222,7 +237,6 @@ public class Analyzer {
         } else {
             System.out.println("Only punctuation not handled correctly");
         }
-        
     }
 
 }

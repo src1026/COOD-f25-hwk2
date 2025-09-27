@@ -1,8 +1,23 @@
-package src; /**
- * @author [YOUR NAME HERE!]
+package src; 
+
+/**
+ * @author Riz CHen
  *
  * This class contains a method for reading from a file and creating Sentence objects
  * for a sentiment analysis program.
+ * 
+ * SET IMPLEMENTATION JUSTIFICATION:
+ * I chose HashSet for the readFile() method because:
+ * - O(1) average-case add and contains operations for Sentence objects
+ * - Automatically prevents duplicate Sentence objects (though unlikely in this context)
+ * - No ordering requirement - we don't need sentences sorted in any particular way
+ * - Memory efficient for large datasets
+ * - Fast iteration through all sentences
+ * - TreeSet would provide sorted order but at O(log n) cost for add/contains operations
+ * - LinkedHashSet would maintain insertion order but adds memory overhead for maintaining links
+ * 
+ * Usage: Stores unique Sentence objects from the input file, preventing duplicates
+ * and providing fast access for subsequent processing in the sentiment analysis pipeline.
  */
 
 import java.io.File;
